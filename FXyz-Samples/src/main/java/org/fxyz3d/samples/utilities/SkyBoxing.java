@@ -25,46 +25,46 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */ 
+ */
 
 package org.fxyz3d.samples.utilities;
 
-import javafx.scene.Node;
 import org.fxyz3d.samples.shapes.ShapeBaseSample;
 import org.fxyz3d.scene.Skybox;
+
+import javafx.scene.Node;
 
 /**
  *
  * @author Dub
  */
 public class SkyBoxing extends ShapeBaseSample {
+    public static class Launcher {
 
-    public static void main(String[] args){SkyBoxing.launch(args);}
+        public static void main(String[] argv) {
+            SkyBoxing.main(argv);
+        }
+    }
 
-    @Override
-    protected void createMesh() {
-        // Load Skybox AFTER camera is initialized
-        double size = 100000D;
-        model = new Skybox(
-                top,
-                bottom,
-                left,
-                right,
-                front,
-                back,
-                size,
-                camera
-        );
-       
+    public static void main(String[] args) {
+        SkyBoxing.launch(args);
     }
 
     @Override
     protected void addMeshAndListeners() {
     }
-    
+
     @Override
     protected Node buildControlPanel() {
         return null;
+    }
+
+    @Override
+    protected void createMesh() {
+        // Load Skybox AFTER camera is initialized
+        double size = 100000D;
+        model = new Skybox(top, bottom, left, right, front, back, size, camera);
+
     }
 
 }

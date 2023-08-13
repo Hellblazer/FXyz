@@ -25,7 +25,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */ 
+ */
 package org.fxyz3d.samples;
 
 import org.fxyz3d.client.FXyzClient;
@@ -35,7 +35,7 @@ import org.fxyz3d.client.FXyzClient;
  * @author JosePereda
  */
 public class Launcher {
-    
+
     public static void main(String[] args) {
         FXyzClient.main(args);
     }

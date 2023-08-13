@@ -25,9 +25,12 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */ 
+ */
 
 package org.fxyz3d.samples.utilities;
+
+import org.fxyz3d.geometry.Ray;
+import org.fxyz3d.samples.shapes.ShapeBaseSample;
 
 import javafx.animation.Interpolator;
 import javafx.animation.PauseTransition;
@@ -48,64 +51,84 @@ import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.Shape3D;
 import javafx.scene.shape.Sphere;
 import javafx.util.Duration;
-import org.fxyz3d.geometry.Ray;
-import org.fxyz3d.samples.shapes.ShapeBaseSample;
 
 /**
- * A simple app Showing the newly added Ray class.
- * <br><p>
- * Holding Control and Clicking on the Scene will spawn a Sphere at the position 
+ * A simple app Showing the newly added Ray class. <br>
+ * <p>
+ * Holding Control and Clicking on the Scene will spawn a Sphere at the position
  * of the small cube (origin of Ray)<br>
  * keyboard movement controls I,J,K,L,U,M translates the origin cube.<br>
  * Mouse buttons target different nodes Targets are briefly highlighted when an
- * intersection occurs.
- * <br><br>
- * RayTest in org.fxyz3d.tests package has reference on TriangleMesh intersections
+ * intersection occurs. <br>
+ * <br>
+ * RayTest in org.fxyz3d.tests package has reference on TriangleMesh
+ * intersections
  *
- * </p><br>
+ * </p>
+ * <br>
  *
  * @author Jason Pollastrini aka jdub1581
  */
+@SuppressWarnings("rawtypes")
 public class RayShooting extends ShapeBaseSample {
-    
-    public static void main(String[] args){launch(args);}
+    public static class Launcher {
 
-    private final PhongMaterial red = new PhongMaterial(Color.ORCHID),
-            blue = new PhongMaterial(Color.BLUEVIOLET),
-            highlight = new PhongMaterial(Color.LIME.brighter());
-    //==========================================================================
-    
-    private final AmbientLight rayLight = new AmbientLight();
+        public static void main(String[] argv) {
+            RayShooting.main(argv);
+        }
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     protected PointLight light, light2, light3;
-    protected Sphere target1, target2;
-    protected Box origin;
-    
+
+    protected Box               origin;
+    protected Sphere            target1, target2;
+    private final AmbientLight  rayLight = new AmbientLight();
+    private final PhongMaterial red      = new PhongMaterial(Color.ORCHID), blue = new PhongMaterial(Color.BLUEVIOLET),
+    highlight = new PhongMaterial(Color.LIME.brighter());
+    // ==========================================================================
+
     @Override
     protected void addMeshAndListeners() {
         camera.setTranslateZ(-2000);
 
         subScene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             double change = 10.0;
-            KeyCode keycode = event.getCode();                
-            //move Origin
-            if(keycode == KeyCode.I) { origin.setTranslateZ(origin.getTranslateZ() + change); }
-            if(keycode == KeyCode.K) { origin.setTranslateZ(origin.getTranslateZ() - change); }
-            if(keycode == KeyCode.J) { origin.setTranslateX(origin.getTranslateX() - change); }
-            if(keycode == KeyCode.L) { origin.setTranslateX(origin.getTranslateX() + change); }
-            if(keycode == KeyCode.U ) { origin.setTranslateY(origin.getTranslateY() - change); }
-            if(keycode == KeyCode.M ) { origin.setTranslateY(origin.getTranslateY() + change); }
+            KeyCode keycode = event.getCode();
+            // move Origin
+            if (keycode == KeyCode.I) {
+                origin.setTranslateZ(origin.getTranslateZ() + change);
+            }
+            if (keycode == KeyCode.K) {
+                origin.setTranslateZ(origin.getTranslateZ() - change);
+            }
+            if (keycode == KeyCode.J) {
+                origin.setTranslateX(origin.getTranslateX() - change);
+            }
+            if (keycode == KeyCode.L) {
+                origin.setTranslateX(origin.getTranslateX() + change);
+            }
+            if (keycode == KeyCode.U) {
+                origin.setTranslateY(origin.getTranslateY() - change);
+            }
+            if (keycode == KeyCode.M) {
+                origin.setTranslateY(origin.getTranslateY() + change);
+            }
         });
 
         subScene.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
             if (e.isControlDown()) {
-                //cube location will be the starting point of the ray
-                Point3D o = new Point3D(origin.getTranslateX(), origin.getTranslateY(), 
-                    origin.getTranslateZ()); 
+                // cube location will be the starting point of the ray
+                Point3D o = new Point3D(origin.getTranslateX(), origin.getTranslateY(), origin.getTranslateZ());
                 if (e.isPrimaryButtonDown()) {
                     // set Target and Direction
-                    Point3D t = Point3D.ZERO.add(target2.getTranslateX(), target2.getTranslateY(), target2.getTranslateZ()),
-                            d = t.subtract(o);
-                    //Build the Ray
+                    Point3D t = Point3D.ZERO.add(target2.getTranslateX(), target2.getTranslateY(),
+                                                 target2.getTranslateZ()),
+                    d = t.subtract(o);
+                    // Build the Ray
                     Ray r = new Ray(o, d);
                     double dist = t.distance(o);
                     // If ray intersects node, spawn and animate
@@ -114,8 +137,9 @@ public class RayShooting extends ShapeBaseSample {
                     }
                 } // repeat for other target as well
                 else if (e.isSecondaryButtonDown()) {
-                    Point3D tgt = Point3D.ZERO.add(target1.getTranslateX(), target1.getTranslateY(), target1.getTranslateZ()),
-                            dir = tgt.subtract(o);
+                    Point3D tgt = Point3D.ZERO.add(target1.getTranslateX(), target1.getTranslateY(),
+                                                   target1.getTranslateZ()),
+                    dir = tgt.subtract(o);
 
                     Ray r = new Ray(o, dir);
                     double dist = tgt.distance(o);
@@ -128,22 +152,69 @@ public class RayShooting extends ShapeBaseSample {
         });
     }
 
+    @Override
+    protected Node buildControlPanel() {
+        return null;
+    }
+
+    @Override
+    protected void createMesh() {
+        // add camera so it doesn't affect all nodes
+        rayLight.getScope().add(camera);
+
+        light = new PointLight(Color.GAINSBORO);
+        light.setTranslateX(-300);
+        light.setTranslateY(300);
+        light.setTranslateZ(-2000);
+
+        light2 = new PointLight(Color.ALICEBLUE);
+        light2.setTranslateX(300);
+        light2.setTranslateY(-300);
+        light2.setTranslateZ(2000);
+
+        light3 = new PointLight(Color.SPRINGGREEN);
+        light3.setTranslateY(-2000);
+        // create a target
+        target1 = new Sphere(180);
+        target1.setId("t1");
+        target1.setDrawMode(DrawMode.LINE);
+        target1.setCullFace(CullFace.NONE);
+        target1.setTranslateX(500);
+        target1.setTranslateY(500);
+        target1.setTranslateZ(500);
+        target1.setMaterial(red);
+        // create another target
+        target2 = new Sphere(150);
+        target2.setId("t2");
+        target2.setDrawMode(DrawMode.LINE);
+        target2.setCullFace(CullFace.NONE);
+        target2.setTranslateX(-500);
+        target2.setTranslateY(-500);
+        target2.setTranslateZ(-500);
+        target2.setMaterial(blue);
+
+        origin = new Box(20, 20, 20);
+        origin.setDrawMode(DrawMode.LINE);
+        origin.setCullFace(CullFace.NONE);
+
+        model = new Group(target1, target2, origin, light, light2, light3, rayLight);
+    }
+
     /**
      *
-     * @param r The Ray that holds the info
-     * @param tx to x
-     * @param ty to y
-     * @param tz to z
-     * @param dps distance per step to move ray
+     * @param r    The Ray that holds the info
+     * @param tx   to x
+     * @param ty   to y
+     * @param tz   to z
+     * @param dps  distance per step to move ray
      * @param time length of animation
      */
     private void animateRayTo(final Ray r, final Shape3D target, final Duration time) {
 
         final Transition t = new Transition() {
-            protected Ray ray;
-            protected Sphere s;
             protected double dist;
-
+            protected Ray    ray;
+            protected Sphere s;
             {
                 this.ray = r;
 
@@ -153,9 +224,9 @@ public class RayShooting extends ShapeBaseSample {
                 s.setTranslateZ((ray.getOrigin()).getZ());
                 s.setMaterial(highlight);
                 rayLight.getScope().add(s);
-                this.dist = ray.getOrigin().distance(
-                        Point3D.ZERO.add(target.getTranslateX(), target.getTranslateY(), target.getTranslateZ())
-                );
+                this.dist = ray.getOrigin()
+                               .distance(Point3D.ZERO.add(target.getTranslateX(), target.getTranslateY(),
+                                                          target.getTranslateZ()));
 
                 setCycleDuration(time);
                 this.setInterpolator(Interpolator.LINEAR);
@@ -179,8 +250,8 @@ public class RayShooting extends ShapeBaseSample {
 
             @Override
             protected void interpolate(double frac) {
-                // frac-> 0.0 - 1.0 
-                // project ray 
+                // frac-> 0.0 - 1.0
+                // project ray
                 ray.project(dist * frac);
                 // set the sphere to ray position
                 s.setTranslateX(ray.getPosition().getX());
@@ -195,57 +266,9 @@ public class RayShooting extends ShapeBaseSample {
 
     // resets materisl on targets
     private void reset() {
-  
-        ((Shape3D)((Group)model).getChildren().get(0)).setMaterial(red);
-        ((Shape3D)((Group)model).getChildren().get(1)).setMaterial(blue);
-        
-    }
 
-    @Override
-    protected void createMesh() {
-        // add camera so it doesn't affect all nodes
-        rayLight.getScope().add(camera);
+        ((Shape3D) ((Group) model).getChildren().get(0)).setMaterial(red);
+        ((Shape3D) ((Group) model).getChildren().get(1)).setMaterial(blue);
 
-        light = new PointLight(Color.GAINSBORO);
-        light.setTranslateX(-300);
-        light.setTranslateY(300);
-        light.setTranslateZ(-2000);
-
-        light2 = new PointLight(Color.ALICEBLUE);
-        light2.setTranslateX(300);
-        light2.setTranslateY(-300);
-        light2.setTranslateZ(2000);
-
-        light3 = new PointLight(Color.SPRINGGREEN);
-        light3.setTranslateY(-2000);
-        //create a target
-        target1 = new Sphere(180);
-        target1.setId("t1");
-        target1.setDrawMode(DrawMode.LINE);
-        target1.setCullFace(CullFace.NONE);
-        target1.setTranslateX(500);
-        target1.setTranslateY(500);
-        target1.setTranslateZ(500);
-        target1.setMaterial(red);
-        // create another target
-        target2 = new Sphere(150);
-        target2.setId("t2");
-        target2.setDrawMode(DrawMode.LINE);
-        target2.setCullFace(CullFace.NONE);
-        target2.setTranslateX(-500);
-        target2.setTranslateY(-500);
-        target2.setTranslateZ(-500);
-        target2.setMaterial(blue);
-
-        origin = new Box(20, 20, 20);
-        origin.setDrawMode(DrawMode.LINE);
-        origin.setCullFace(CullFace.NONE);
-        
-        model = new Group(target1, target2, origin, light, light2, light3, rayLight);
-    }
-        
-    @Override
-    protected Node buildControlPanel() {
-        return null;
     }
 }

@@ -25,7 +25,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */ 
+ */
 
 package org.fxyz3d.samples.utilities;
 
@@ -33,6 +33,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
+
+import org.fxyz3d.samples.FXyzSample;
+import org.fxyz3d.scene.Axes;
+import org.fxyz3d.shapes.primitives.CurvedSpringMesh;
+import org.fxyz3d.shapes.primitives.KnotMesh;
+import org.fxyz3d.shapes.primitives.helper.TriangleMeshHelper.SectionType;
+import org.fxyz3d.utils.CameraTransformer;
+
 import javafx.geometry.Bounds;
 import javafx.geometry.Point3D;
 import javafx.scene.AmbientLight;
@@ -56,23 +64,33 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
-import org.fxyz3d.samples.FXyzSample;
-import org.fxyz3d.scene.Axes;
-import org.fxyz3d.shapes.primitives.CurvedSpringMesh;
-import org.fxyz3d.shapes.primitives.KnotMesh;
-import org.fxyz3d.shapes.primitives.helper.TriangleMeshHelper.SectionType;
-import org.fxyz3d.utils.CameraTransformer;
 
 /**
  *
  * @author jpereda
  */
 public class RayIntersections extends FXyzSample {
+    public static class Launcher {
 
-    public static void main(String[] args){
+        public static void main(String[] argv) {
+            RayIntersections.main(argv);
+        }
+    }
+
+    public static void main(String[] args) {
         launch(args);
     }
-    
+
+    @Override
+    public String getJavaDocURL() {
+        return null;
+    }
+
+    @Override
+    public Node getPanel(Stage stage) {
+        return getSample();
+    }
+
     @Override
     public Node getSample() {
 
@@ -91,7 +109,7 @@ public class RayIntersections extends FXyzSample {
         scene.setFill(Color.web("#303030"));
         camera = new PerspectiveCamera(true);
 
-        //setup camera transform for rotational support
+        // setup camera transform for rotational support
         cameraTransform.setTranslate(0, 0, 0);
         cameraTransform.getChildren().add(camera);
         camera.setNearClip(0.1);
@@ -99,7 +117,7 @@ public class RayIntersections extends FXyzSample {
         camera.setTranslateZ(-40);
         cameraTransform.ry.setAngle(-45.0);
         cameraTransform.rx.setAngle(-10.0);
-        //add a Point Light for better viewing of the grid coordinate system
+        // add a Point Light for better viewing of the grid coordinate system
         PointLight light = new PointLight(Color.WHITE);
         cameraTransform.getChildren().add(light);
         cameraTransform.getChildren().add(new AmbientLight(Color.WHITE));
@@ -112,13 +130,11 @@ public class RayIntersections extends FXyzSample {
         Group group = new Group();
         group.getChildren().add(cameraTransform);
 
-        knot = new KnotMesh(2d, 1d, 0.4d, 2d, 3d,
-                100, 20, 0, 0);
+        knot = new KnotMesh(2d, 1d, 0.4d, 2d, 3d, 100, 20, 0, 0);
 //        knot.setDrawMode(DrawMode.LINE);
         knot.setCullFace(CullFace.NONE);
         knot.setSectionType(SectionType.TRIANGLE);
-        spring = new CurvedSpringMesh(6d, 2d, 0.4d, 25d, 6.25d * 2d * Math.PI,
-                1000, 60, 0, 0);
+        spring = new CurvedSpringMesh(6d, 2d, 0.4d, 25d, 6.25d * 2d * Math.PI, 1000, 60, 0, 0);
         spring.getTransforms().addAll(new Translate(6, -6, 0));
         spring.setDrawMode(DrawMode.LINE);
         spring.setCullFace(CullFace.NONE);
@@ -133,8 +149,7 @@ public class RayIntersections extends FXyzSample {
         group.getChildren().add(spring);
 
         /*
-         Origin in knot
-         Target in spring
+         * Origin in knot Target in spring
          */
         org.fxyz3d.geometry.Point3D locOrigin = knot.getOrigin();
         Point3D gloOrigin = knot.localToScene(new Point3D(locOrigin.x, locOrigin.y, locOrigin.z));
@@ -160,9 +175,9 @@ public class RayIntersections extends FXyzSample {
         double angle = Math.acos(gloTarget.subtract(gloOrigin).normalize().dotProduct(new Point3D(0, -1, 0)));
         double h1 = gloTarget.subtract(gloOrigin).magnitude();
         Cylinder c = new Cylinder(0.01d, h1);
-        c.getTransforms().addAll(new Translate(gloOrigin.getX(), gloOrigin.getY() - h1 / 2d, gloOrigin.getZ()),
-                new Rotate(-Math.toDegrees(angle), 0d, h1 / 2d, 0d,
-                        new Point3D(dir.getX(), -dir.getY(), dir.getZ())));
+        c.getTransforms()
+         .addAll(new Translate(gloOrigin.getX(), gloOrigin.getY() - h1 / 2d, gloOrigin.getZ()),
+                 new Rotate(-Math.toDegrees(angle), 0d, h1 / 2d, 0d, new Point3D(dir.getX(), -dir.getY(), dir.getZ())));
         c.setMaterial(new PhongMaterial(Color.GREEN));
         group.getChildren().add(c);
 
@@ -170,19 +185,24 @@ public class RayIntersections extends FXyzSample {
         Box box = new Box(gloBounds.getWidth(), gloBounds.getHeight(), gloBounds.getDepth());
         box.setDrawMode(DrawMode.LINE);
         box.setMaterial(new PhongMaterial(Color.BLUEVIOLET));
-        box.getTransforms().add(new Translate(gloBounds.getMinX() + gloBounds.getWidth() / 2d,
-                gloBounds.getMinY() + gloBounds.getHeight() / 2d, gloBounds.getMinZ() + gloBounds.getDepth() / 2d));
+        box.getTransforms()
+           .add(new Translate(gloBounds.getMinX() + gloBounds.getWidth() / 2d,
+                              gloBounds.getMinY() + gloBounds.getHeight() / 2d,
+                              gloBounds.getMinZ() + gloBounds.getDepth() / 2d));
         group.getChildren().add(box);
 
         /*
-         FIRST STEP; Check the ray crosses the bounding box of the shape at any of
-         its 6 faces
+         * FIRST STEP; Check the ray crosses the bounding box of the shape at any of its
+         * 6 faces
          */
         List<Point3D> normals = Arrays.asList(new Point3D(-1, 0, 0), new Point3D(1, 0, 0), new Point3D(0, -1, 0),
-                new Point3D(0, 1, 0), new Point3D(0, 0, -1), new Point3D(0, 0, 1));
-        List<Point3D> positions = Arrays.asList(new Point3D(locBounds.getMinX(), 0, 0), new Point3D(locBounds.getMaxX(), 0, 0),
-                new Point3D(0, locBounds.getMinY(), 0), new Point3D(0, locBounds.getMaxY(), 0),
-                new Point3D(0, 0, locBounds.getMinZ()), new Point3D(0, 0, locBounds.getMaxZ()));
+                                              new Point3D(0, 1, 0), new Point3D(0, 0, -1), new Point3D(0, 0, 1));
+        List<Point3D> positions = Arrays.asList(new Point3D(locBounds.getMinX(), 0, 0),
+                                                new Point3D(locBounds.getMaxX(), 0, 0),
+                                                new Point3D(0, locBounds.getMinY(), 0),
+                                                new Point3D(0, locBounds.getMaxY(), 0),
+                                                new Point3D(0, 0, locBounds.getMinZ()),
+                                                new Point3D(0, 0, locBounds.getMaxZ()));
         AtomicInteger counter = new AtomicInteger();
         IntStream.range(0, 6).forEach(i -> {
             // ray[t]= ori+t.dir; t/ray[t]=P in plane
@@ -202,34 +222,38 @@ public class RayIntersections extends FXyzSample {
         });
         if (counter.get() > 0) {
             /*
-             SECOND STEP: Check if the ray crosses any of the triangles of the mesh
+             * SECOND STEP: Check if the ray crosses any of the triangles of the mesh
              */
             // triangle mesh
-            org.fxyz3d.geometry.Point3D gloOriginInLoc1 = new org.fxyz3d.geometry.Point3D((float) gloOriginInLoc.getX(), (float) gloOriginInLoc.getY(), (float) gloOriginInLoc.getZ());
-            org.fxyz3d.geometry.Point3D gloDirection1 = new org.fxyz3d.geometry.Point3D((float) gloDirection.getX(), (float) gloDirection.getY(), (float) gloDirection.getZ());
+            org.fxyz3d.geometry.Point3D gloOriginInLoc1 = new org.fxyz3d.geometry.Point3D((float) gloOriginInLoc.getX(),
+                                                                                          (float) gloOriginInLoc.getY(),
+                                                                                          (float) gloOriginInLoc.getZ());
+            org.fxyz3d.geometry.Point3D gloDirection1 = new org.fxyz3d.geometry.Point3D((float) gloDirection.getX(),
+                                                                                        (float) gloDirection.getY(),
+                                                                                        (float) gloDirection.getZ());
 
             System.out.println("inter: " + spring.getIntersections(gloOriginInLoc1, gloDirection1));
         }
 
         sceneRoot.getChildren().addAll(group);
 
-        //First person shooter keyboard movement 
+        // First person shooter keyboard movement
         scene.setOnKeyPressed(event -> {
             double change = 10.0;
-            //Add shift modifier to simulate "Running Speed"
+            // Add shift modifier to simulate "Running Speed"
             if (event.isShiftDown()) {
                 change = 50.0;
             }
-            //What key did the user press?
+            // What key did the user press?
             KeyCode keycode = event.getCode();
-            //Step 2c: Add Zoom controls
+            // Step 2c: Add Zoom controls
             if (keycode == KeyCode.W) {
                 camera.setTranslateZ(camera.getTranslateZ() + change);
             }
             if (keycode == KeyCode.S) {
                 camera.setTranslateZ(camera.getTranslateZ() - change);
             }
-            //Step 2d:  Add Strafe controls
+            // Step 2d: Add Strafe controls
             if (keycode == KeyCode.A) {
                 camera.setTranslateX(camera.getTranslateX() - change);
             }
@@ -262,15 +286,17 @@ public class RayIntersections extends FXyzSample {
                 modifier = 50.0;
             }
             if (me.isPrimaryButtonDown()) {
-                cameraTransform.ry.setAngle(((cameraTransform.ry.getAngle() + mouseDeltaX * modifierFactor * modifier * 2.0) % 360 + 540) % 360 - 180);  // +
-                cameraTransform.rx.setAngle(((cameraTransform.rx.getAngle() - mouseDeltaY * modifierFactor * modifier * 2.0) % 360 + 540) % 360 - 180);  // -
+                cameraTransform.ry.setAngle(((cameraTransform.ry.getAngle()
+                + mouseDeltaX * modifierFactor * modifier * 2.0) % 360 + 540) % 360 - 180); // +
+                cameraTransform.rx.setAngle(((cameraTransform.rx.getAngle()
+                - mouseDeltaY * modifierFactor * modifier * 2.0) % 360 + 540) % 360 - 180); // -
             } else if (me.isSecondaryButtonDown()) {
                 double z = camera.getTranslateZ();
                 double newZ = z + mouseDeltaX * modifierFactor * modifier;
                 camera.setTranslateZ(newZ);
             } else if (me.isMiddleButtonDown()) {
-                cameraTransform.t.setX(cameraTransform.t.getX() + mouseDeltaX * modifierFactor * modifier * 0.3);  // -
-                cameraTransform.t.setY(cameraTransform.t.getY() + mouseDeltaY * modifierFactor * modifier * 0.3);  // -
+                cameraTransform.t.setX(cameraTransform.t.getX() + mouseDeltaX * modifierFactor * modifier * 0.3); // -
+                cameraTransform.t.setY(cameraTransform.t.getY() + mouseDeltaY * modifierFactor * modifier * 0.3); // -
             }
         });
 
@@ -281,26 +307,16 @@ public class RayIntersections extends FXyzSample {
         sp.setBackground(Background.EMPTY);
         sp.getChildren().add(scene);
         sp.setPickOnBounds(false);
-        
+
         scene.widthProperty().bind(sp.widthProperty());
         scene.heightProperty().bind(sp.heightProperty());
-        
+
         return (sp);
     }
 
     @Override
-    public Node getPanel(Stage stage) {
-        return getSample();
-    }
-
-    @Override
-    public String getJavaDocURL() {
-        return null;
-    }
-    @Override
     protected Node buildControlPanel() {
         return null;
     }
-    
-    
+
 }
