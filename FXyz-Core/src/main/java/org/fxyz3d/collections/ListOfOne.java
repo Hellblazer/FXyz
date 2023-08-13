@@ -25,7 +25,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */ 
+ */
 
 package org.fxyz3d.collections;
 
@@ -37,14 +37,15 @@ import java.util.NoSuchElementException;
 
 /**
  * This is an immutable list of some arbitrary size backed by a single element.
+ *
  * @author brian
  * @param <E> The type of element in the list
  */
 public class ListOfOne<E> implements List<E> {
 
+    private final E   element;
     private final int size;
-    private final E element;
-    
+
     public ListOfOne(E element, int size) {
         if (element == null) {
             throw new IllegalArgumentException("A null element is not allowed.");
@@ -55,55 +56,6 @@ public class ListOfOne<E> implements List<E> {
         this.element = element;
         this.size = size;
     }
-    
-
-    @Override
-    public int size() {
-        return size;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public boolean contains(Object o) {
-        return element.equals(o);
-    }
-
-    @Override
-    public Iterator<E> iterator() {
-        return new Iterator<E>() {
-            
-            private int n = 0;
-
-            @Override
-            public boolean hasNext() {
-                return n < (size - 1);
-            }
-
-            @Override
-            public E next() {
-                if (!hasNext()) {
-                    throw new NoSuchElementException();
-                }
-                n++;
-                return element;
-            }
-            
-        };
-    }
-
-    @Override
-    public Object[] toArray() {
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }
-
-    @Override
-    public <T> T[] toArray(T[] a) {
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }
 
     @Override
     public boolean add(E e) {
@@ -111,8 +63,28 @@ public class ListOfOne<E> implements List<E> {
     }
 
     @Override
-    public boolean remove(Object o) {
-        throw new UnsupportedOperationException("Removing elements is not allowed");
+    public void add(int index, E element) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends E> c) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean addAll(int index, Collection<? extends E> c) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return element.equals(o);
     }
 
     @Override
@@ -128,53 +100,12 @@ public class ListOfOne<E> implements List<E> {
     }
 
     @Override
-    public boolean addAll(Collection<? extends E> c) {
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }
-
-    @Override
-    public boolean addAll(int index, Collection<? extends E> c) {
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }
-
-    @Override
-    public boolean removeAll(Collection<?> c) {
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }
-
-    @Override
-    public boolean retainAll(Collection<?> c) {
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }
-
-    @Override
-    public void clear() {
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }
-
-    @Override
     public E get(int index) {
         if (index < size) {
             return element;
-        }
-        else {
+        } else {
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
-    }
-
-    @Override
-    public E set(int index, E element) {
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }
-
-    @Override
-    public void add(int index, E element) {
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }
-
-    @Override
-    public E remove(int index) {
-        throw new UnsupportedOperationException("Not supported yet."); 
     }
 
     @Override
@@ -184,6 +115,34 @@ public class ListOfOne<E> implements List<E> {
             v = 0;
         }
         return v;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        return new Iterator<E>() {
+
+            private int n = 0;
+
+            @Override
+            public boolean hasNext() {
+                return n < (size - 1);
+            }
+
+            @Override
+            public E next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+                n++;
+                return element;
+            }
+
+        };
     }
 
     @Override
@@ -201,11 +160,16 @@ public class ListOfOne<E> implements List<E> {
     }
 
     @Override
-    public ListIterator<E> listIterator(int index) {
+    public ListIterator<E> listIterator(final int index) {
         return new ListIterator<E>() {
-            
+
+            private int       n = 0;
             private final int s = size - index;
-            private int n = 0;
+
+            @Override
+            public void add(E e) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
 
             @Override
             public boolean hasNext() {
@@ -213,17 +177,22 @@ public class ListOfOne<E> implements List<E> {
             }
 
             @Override
+            public boolean hasPrevious() {
+                return n >= 0;
+            }
+
+            @Override
             public E next() {
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
-               n++;
-               return element;
+                n++;
+                return element;
             }
 
             @Override
-            public boolean hasPrevious() {
-                return n >= 0;
+            public int nextIndex() {
+                return n + 1;
             }
 
             @Override
@@ -236,35 +205,65 @@ public class ListOfOne<E> implements List<E> {
             }
 
             @Override
-            public int nextIndex() {
-                return n + 1;
-            }
-
-            @Override
             public int previousIndex() {
                 return n - 1;
             }
 
             @Override
             public void remove() {
-                throw new UnsupportedOperationException("Not supported yet."); 
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
             public void set(E e) {
-                throw new UnsupportedOperationException("Not supported yet."); 
-            }
-
-            @Override
-            public void add(E e) {
-                throw new UnsupportedOperationException("Not supported yet."); 
+                throw new UnsupportedOperationException("Not supported yet.");
             }
         };
+    }
+
+    @Override
+    public E remove(int index) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        throw new UnsupportedOperationException("Removing elements is not allowed");
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public E set(int index, E element) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public int size() {
+        return size;
     }
 
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
         return new ListOfOne<>(element, toIndex - fromIndex);
     }
-    
+
+    @Override
+    public Object[] toArray() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }
